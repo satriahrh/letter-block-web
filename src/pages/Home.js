@@ -1,6 +1,5 @@
 import React from "react";
 import module from './Home.module.scss'
-import Fingerprint2 from 'fingerprintjs2'
 
 class Home extends React.Component {
   constructor(props) {
