@@ -55,7 +55,7 @@ class NewGame extends React.Component {
           <h2>Mulai permainan baru?</h2>
           <div>
             <label>Jumlah pemain</label>
-            <input className={module.newGameInputNumberOfPlayer} type="number" min="1" max="5" placeholder="min 2, max 5" value={this.state.form.numberOfPlayer} onChange={this.handleFormNumberOfPlayerChange} />
+            <input type="number" min="1" max="5" placeholder="min 2, max 5" value={this.state.form.numberOfPlayer} onChange={this.handleFormNumberOfPlayerChange} />
           </div>
           <input type="submit" value="Mulai!!"/>
         </form>
