@@ -177,11 +177,9 @@ class Board extends React.Component {
           }
         </div>
         <Layout>
-          <div className={module.navigation}>
-            <p>Turn: <span style={{color: this.currentTurnColor()}}>{this.currentTurn()}</span></p>
-            <pre>letter-block.game/bd/{this.state.gameId}</pre>
-            <p><Link to="/">Home</Link></p>
-          </div>
+          <p>Turn: <span style={{color: this.currentTurnColor()}}>{this.currentTurn()}</span></p>
+          <pre>letter-block.game/bd/{this.state.gameId}</pre>
+          <p><Link to="/">Home</Link></p>
         </Layout>
       </div>
     )
