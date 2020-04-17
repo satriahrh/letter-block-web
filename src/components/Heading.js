@@ -5,8 +5,8 @@ import React from "react";
 function Heading() {
   let navs = [
     {to: "/game", text: "New Game"},
-  ].map((navigation) => (
-    <NavLink to={navigation.to} activeStyle={{backgroundColor: "grey"}}>{navigation.text}</NavLink>
+  ].map((navigation, id) => (
+    <NavLink key={id} to={navigation.to} activeStyle={{backgroundColor: "grey"}}>{navigation.text}</NavLink>
   ));
 
   return (

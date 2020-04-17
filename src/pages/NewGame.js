@@ -1,5 +1,6 @@
 import React from "react";
 import module from './NewGame.module.scss'
+import {Redirect} from "react-router-dom"
 
 class NewGame extends React.Component {
   constructor(props) {
@@ -44,11 +45,20 @@ class NewGame extends React.Component {
     if (!this.formValidateNumberOfPlayer(this.state.form.numberOfPlayer)) {
       return
     }
-    alert('A name was submitted: ' + this.state.form.numberOfPlayer);
+    this.setState((prevState, _) => {
+      return {
+        ...prevState,
+        gameId: 1,
+      }
+    });
     event.preventDefault();
   }
 
   render() {
+    const gameId = this.state.gameId;
+    if (gameId) {
+      return <Redirect push to={"/game/2"} />
+    }
     return (
       <div className={module.game}>
         <form onSubmit={this.handleSubmit}>
