@@ -7,14 +7,14 @@ import {
   Link
 } from "react-router-dom";
 import Board from "./pages/Board";
-import Home from "./pages/Home";
+import NewGame from "./pages/NewGame";
 
 export default function App() {
   return(
     <BrowserRouter>
       <Switch>
-        <Route exact path="/" component={Home} />
-        <Route path="/bd/:id" component={Board}/>
+        <Route exact path="/game" component={NewGame} />
+        <Route path="/game/:id" component={Board}/>
       </Switch>
     </BrowserRouter>
   )

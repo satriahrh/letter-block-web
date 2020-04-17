@@ -1,7 +1,7 @@
 import React from "react";
-import module from './Home.module.scss'
+import module from './NewGame.module.scss'
 
-class Home extends React.Component {
+class NewGame extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -64,4 +64,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home
+export default NewGame
