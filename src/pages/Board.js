@@ -24,6 +24,8 @@ class Board extends React.Component {
           id: 0,
           order: 0,
         },
+        players: [],
+        wordPlayeds: [],
         numberOfPlayer: 1,
         boardBase: Array(25).fill(0),
         boardPositioning: Array(25).fill(0),
@@ -35,8 +37,6 @@ class Board extends React.Component {
         username: "Player1",
       },
       word: [],
-      wordPlayeds: [],
-      players: [],
       playerColors: new Map(),
     };
 
@@ -116,7 +116,7 @@ class Board extends React.Component {
     if (gameCurrentPlayer.id === this.state.user.id) {
       return "YOUR"
     } else {
-      let currentPlayer = this.state.players[gameCurrentPlayer.order];
+      let currentPlayer = this.state.game.players[gameCurrentPlayer.order];
       if (currentPlayer) {
         return currentPlayer.username
       } else {
@@ -136,14 +136,30 @@ class Board extends React.Component {
   }
 
   componentDidMount() {
-    const {id} = this.props.match.params;
-
     // retrieve game by game id
+    // subscribe game by game id
     let game = {
       currentPlayer: {
         id: 1,
         order: 1,
       },
+
+      players: [
+        {id: 1, username: "aku"},
+        {id: 2, username: "kamu"},
+        {id: 3, username: "dia"},
+        {id: 4, username: "mereka"},
+        {id: 5, username: "kami"}
+      ],
+
+      wordPlayeds: [
+        {word: "KATA", playerId: 1},
+        {word: "KUTU", playerId: 2},
+        {word: "KITA", playerId: 3},
+        {word: "KAMI", playerId: 4},
+        {word: "MIKA", playerId: 5},
+      ],
+
       maxStrength: 2,
       numberOfPlayer: 2,
       boardBase: this.state.game.boardBase.map((_, id) => (id)),
@@ -151,33 +167,14 @@ class Board extends React.Component {
       alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     };
 
-    let players = [
-      {id: 1, username: "aku"},
-      {id: 2, username: "kamu"},
-      {id: 3, username: "dia"},
-      {id: 4, username: "mereka"},
-      {id: 5, username: "kami"}
-    ];
-    this.definePlayerColors(players);
-
-    let wordPlayeds = [
-      {word: "KATA", playerId: 1},
-      {word: "KUTU", playerId: 2},
-      {word: "KITA", playerId: 3},
-      {word: "KAMI", playerId: 4},
-      {word: "MIKA", playerId: 5},
-    ];
-
     this.setState((prevState, _) => ({
         ...prevState,
         game: game,
-        gameId: id,
-        wordPlayeds: wordPlayeds,
-        players: players,
       })
-    )
-  }
+    );
 
+    this.definePlayerColors(game.players);
+  }
 
 
   render() {
@@ -223,8 +220,8 @@ class Board extends React.Component {
           }
         </div>
         <Layout>
-          <pre>letter-block.game/bd/{this.state.gameId}</pre>
-          <BoardWordHistory wordPlayeds={this.state.wordPlayeds} playerColors={this.state.playerColors}/>
+          <pre>letter-block.game/bd/{this.props.id}</pre>
+          <BoardWordHistory wordPlayeds={this.state.game.wordPlayeds} playerColors={this.state.playerColors}/>
         </Layout>
       </div>
     )
