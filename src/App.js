@@ -14,19 +14,19 @@ import Heading from "./components/Heading";
 export default function App() {
   return (
     <BrowserRouter>
-      <Switch>
-        <Route exact path="/game/:id" component={Board}/>
-        <Layout>
-          <Heading/>
           <Switch>
-            <Route exact path="/game" component={NewGame}/>
-            <Route exact path="/" component={Home}/>
-            <Route path="*">
-              <h1>404 Not Found</h1>
-            </Route>
+            <Route exact path="/game/:id" component={Board}/>
+            <Layout>
+              <Heading/>
+              <Switch>
+                <Route exact path="/game" component={NewGame}/>
+                <Route exact path="/" component={Home}/>
+                <Route epath="*">
+                  <h1>404 Not Found</h1>
+                </Route>
+              </Switch>
+            </Layout>
           </Switch>
-        </Layout>
-      </Switch>
     </BrowserRouter>
   )
 }

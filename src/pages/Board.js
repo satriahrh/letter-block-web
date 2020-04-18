@@ -1,7 +1,8 @@
 import React from 'react';
 import module from './Board.module.scss';
-import {Link} from "react-router-dom"
 import Layout from "../components/Layout";
+import Heading from "../components/Heading";
+import BoardWordHistory from "../components/BoardWordHistory";
 // import Pusher from 'pusher-js';
 
 const BOX_COLOR = [
@@ -19,8 +20,10 @@ class Board extends React.Component {
 
     this.state = {
       game: {
-        currentPlayerOrder: 0,
-        currentPlayerId: 0,
+        currentPlayer: {
+          id: 0,
+          order: 0,
+        },
         numberOfPlayer: 1,
         boardBase: Array(25).fill(0),
         boardPositioning: Array(25).fill(0),
@@ -28,10 +31,13 @@ class Board extends React.Component {
         alphabet: " "
       },
       user: {
-        id: 123,
+        id: 1,
         username: "Player1",
       },
       word: [],
+      wordPlayeds: [],
+      players: [],
+      playerColors: new Map(),
     };
 
     this.boxRef = [];
@@ -106,17 +112,27 @@ class Board extends React.Component {
   }
 
   currentTurn() {
-    if (this.state.game.currentPlayerId === this.state.user.id) {
-      return "YOUR TURN!!"
+    let gameCurrentPlayer = this.state.game.currentPlayer;
+    if (gameCurrentPlayer.id === this.state.user.id) {
+      return "YOUR"
     } else {
-      // fetch player by id
-      // return player.username
-      return this.state.game.currentPlayerId
+      let currentPlayer = this.state.players[gameCurrentPlayer.order];
+      if (currentPlayer) {
+        return currentPlayer.username
+      } else {
+        return ''
+      }
     }
   }
 
   currentTurnColor() {
-    return BOX_COLOR[this.state.game.currentPlayerOrder + 1][1]
+    return BOX_COLOR[this.state.game.currentPlayer.order + 1][1]
+  }
+
+  definePlayerColors(players) {
+    players.forEach((player, id) => {
+      this.state.playerColors.set(player.id, BOX_COLOR[id + 1][1])
+    })
   }
 
   componentDidMount() {
@@ -124,8 +140,10 @@ class Board extends React.Component {
 
     // retrieve game by game id
     let game = {
-      currentPlayerOrder: 0,
-      currentPlayerId: 2,
+      currentPlayer: {
+        id: 1,
+        order: 1,
+      },
       maxStrength: 2,
       numberOfPlayer: 2,
       boardBase: this.state.game.boardBase.map((_, id) => (id)),
@@ -133,17 +151,43 @@ class Board extends React.Component {
       alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     };
 
+    let players = [
+      {id: 1, username: "aku"},
+      {id: 2, username: "kamu"},
+      {id: 3, username: "dia"},
+      {id: 4, username: "mereka"},
+      {id: 5, username: "kami"}
+    ];
+    this.definePlayerColors(players);
+
+    let wordPlayeds = [
+      {word: "KATA", playerId: 1},
+      {word: "KUTU", playerId: 2},
+      {word: "KITA", playerId: 3},
+      {word: "KAMI", playerId: 4},
+      {word: "MIKA", playerId: 5},
+    ];
+
     this.setState((prevState, _) => ({
         ...prevState,
         game: game,
         gameId: id,
+        wordPlayeds: wordPlayeds,
+        players: players,
       })
     )
   }
 
+
+
   render() {
     return (
       <div className={module.board}>
+        <Heading>
+          <p style={{margin: "0"}}>
+            <span style={{color: this.currentTurnColor()}}>{this.currentTurn()}</span>'s turn
+          </p>
+        </Heading>
         <div className={module.word}>
           <p>{this.processWord(this.state.word)}</p>
         </div>
@@ -179,9 +223,8 @@ class Board extends React.Component {
           }
         </div>
         <Layout>
-          <p>Turn: <span style={{color: this.currentTurnColor()}}>{this.currentTurn()}</span></p>
           <pre>letter-block.game/bd/{this.state.gameId}</pre>
-          <p><Link to="/">Home</Link></p>
+          <BoardWordHistory wordPlayeds={this.state.wordPlayeds} playerColors={this.state.playerColors}/>
         </Layout>
       </div>
     )

@@ -2,25 +2,30 @@ import module from "./Heading.module.scss"
 import {NavLink} from "react-router-dom";
 import React from "react";
 
-function Heading() {
+function Heading(props) {
   let navs = [
-    {to: "/game", text: "New Game"},
+    {to: "/", text: "HOME"},
+    {to: "/game", text: "NEW GAME"},
   ].map((navigation, id) => (
-    <NavLink key={id} to={navigation.to} activeStyle={{backgroundColor: "grey"}}>{navigation.text}</NavLink>
+    <NavLink
+      key={id}
+      to={navigation.to}
+      activeStyle={{backgroundColor: "grey"}}
+      isActive={(_, location) => {
+        return location.pathname === navigation.to;
+      }}
+    >
+      {navigation.text}
+    </NavLink>
   ));
 
   return (
     <div className={module.heading}>
       <nav>
-        <NavLink
-          to="/"
-          activeStyle={{backgroundColor: "grey"}}
-          isActive={(_, location) => {
-            return location.pathname === "/";
-          }}
-        >Home
-        </NavLink>
         {navs}
+        <div className={module.children}>
+          {props.children}
+        </div>
       </nav>
     </div>
   )
