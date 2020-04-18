@@ -20,7 +20,8 @@ class Board extends React.Component {
     this.state = {
       game: {
         currentPlayerOrder: 0,
-        players: [{id: 0, username: "unknown"}],
+        currentPlayerId: 0,
+        numberOfPlayer: 1,
         boardBase: Array(25).fill(0),
         boardPositioning: Array(25).fill(0),
         maxStrength: 2,
@@ -97,19 +98,20 @@ class Board extends React.Component {
     if (position === 0) {
       return 0
     }
-    return position / (this.state.game.players.length + 2)
+    return position / (this.state.game.numberOfPlayer + 2)
   }
 
   strengthOfThisBase(position) {
-    return position % (this.state.game.players.length + 1)
+    return position % (this.state.game.numberOfPlayer + 1)
   }
 
   currentTurn() {
-    let currentUser = this.state.game.players[this.state.game.currentPlayerOrder]
-    if (currentUser.id === this.state.user.id) {
+    if (this.state.game.currentPlayerId === this.state.user.id) {
       return "YOUR TURN!!"
     } else {
-      return currentUser.username
+      // fetch player by id
+      // return player.username
+      return this.state.game.currentPlayerId
     }
   }
 
@@ -123,9 +125,9 @@ class Board extends React.Component {
     // retrieve game by game id
     let game = {
       currentPlayerOrder: 0,
+      currentPlayerId: 2,
       maxStrength: 2,
-
-      players: [{id: 123, username: "Player1"}, {id: 124, username: "Player2"}],
+      numberOfPlayer: 2,
       boardBase: this.state.game.boardBase.map((_, id) => (id)),
       boardPositioning: Array(25).fill(0),
       alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
