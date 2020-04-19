@@ -3,12 +3,12 @@ import module from "./BoardWordHistory.module.scss"
 
 export default function BoardWordHistory(props) {
   let playerColors = props.playerColors;
-  let words = props.wordPlayeds.map((wordPlayed) => (
-    <li><span style={{color: playerColors.get(wordPlayed.playerId)}}>{wordPlayed.word}</span></li>
+  let words = props.wordPlayeds.map((wordPlayed, id) => (
+    <li key={id}><span style={{color: playerColors.get(wordPlayed.playerId)}}>{wordPlayed.word}</span></li>
   ));
   return (
     <div className={module.history}>
-      <h2>word history</h2>
+      <h2>word history</h2>7
       <ul>
         {words}
       </ul>

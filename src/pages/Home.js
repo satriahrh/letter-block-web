@@ -36,8 +36,8 @@ class Home extends React.Component {
         <h2>On Going Games</h2>
         <ul>
         {
-          this.state.onGoingGames.map((game) => (
-            <li><Link to={"/game/" + game.id}>{game.id}{game.currentPlayerId === this.state.user.id ? ' --- YOUR TURN!!' : null}</Link></li>
+          this.state.onGoingGames.map((game, id) => (
+            <li key={id}><Link to={"/game/" + game.id}>{game.id}{game.currentPlayerId === this.state.user.id ? ' --- YOUR TURN!!' : null}</Link></li>
           ))
         }
         </ul>

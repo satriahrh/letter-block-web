@@ -203,6 +203,7 @@ class Board extends React.Component {
           {
             [...Array(25).keys()].map((id) => (
               <button
+                key={id}
                 id={id} className={module.box}
                 onClick={this.boxOnClick}
                 ref={(r) => this.boxRef[id] = r}
