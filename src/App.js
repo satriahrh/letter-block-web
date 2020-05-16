@@ -11,19 +11,90 @@ import NewGame from "./pages/NewGame";
 import Home from "./pages/Home";
 import Heading from "./components/Heading";
 import Fingerprint2 from 'fingerprintjs2';
+import {ApolloProvider} from '@apollo/react-hooks';
+import ApolloClient from 'apollo-boost';
+import {createHttpLink} from 'apollo-link-http';
+import {setContext} from 'apollo-link-context';
+import caseConverter from 'case-converter'
 
-const PLAYER_ID_KEY = "playerId";
+const DEVICE_FINGERPRINT = "deviceFingerprint";
+const ACCESS_TOKEN = "accessToken";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {
+      graphqlClient: new ApolloClient({uri: 'http://localhost:8080/query'}),
+      loading: true
+    }
   }
 
   componentDidMount() {
-    if (!this.state.playerId) {
-      this.playerIdGeneration()
+    if (this.state.loading) {
+      this.graphqlClientGeneration()
     }
+  }
+
+  async graphqlClientGeneration() {
+    const httpLink = createHttpLink({
+      uri: 'http://localhost:8080/query',
+    });
+
+    let token = await this.tokenGeneration();
+
+    const authLink = setContext((_, {headers}) => {
+      return {
+        headers: {
+          ...headers,
+          authorization: token ? `Bearer ${token}` : "",
+        }
+      }
+    });
+
+    const graphqlClient = new ApolloClient({
+      link: authLink.concat(httpLink),
+    });
+
+    this.setState((prevState) => ({
+      ...prevState,
+      graphqlClient: graphqlClient,
+      loading: false,
+    }));
+  }
+
+  async tokenGeneration() {
+    let accessToken = localStorage.getItem(ACCESS_TOKEN);
+    if (accessToken) {
+      accessToken = JSON.parse(accessToken)
+      let time = new Date()
+      console.log("sekarang", time.getTime())
+      console.log("tokennya", accessToken.expiredAt)
+      console.log(time.getTime() < accessToken.expiredAt)
+      if (time.getTime() < accessToken.expiredAt) {
+        console.log(accessToken.token)
+        return accessToken.token
+      }
+    }
+    let deviceFingerprint = await this.deviceFingerprintGeneration()
+    let form = new FormData();
+    form.append("deviceFingerprint", deviceFingerprint);
+
+    let response = await fetch('http://localhost:8080/authenticate', {
+      method: 'POST',
+      body: form,
+    }).then(response => response.json()).then(data => {
+      return data
+    }).catch(reason => {
+      console.log(reason)
+      return {token: "", expiredIn: 0}
+    });
+
+    response = caseConverter.toCamelCase(response);
+    let time = new Date();
+    response.data.expiredAt = response.data.expiredIn * 1000 + time.getTime();
+    localStorage.setItem(ACCESS_TOKEN, JSON.stringify(response.data));
+    console.log(response.data)
+    return response.data.token
   }
 
   generateFingerprint() {
@@ -44,41 +115,41 @@ class App extends React.Component {
     })
   }
 
-  async playerIdGeneration() {
-    let playerId = localStorage.getItem(PLAYER_ID_KEY);
-    if (!playerId) {
-      let playerFingerprint = await this.generateFingerprint();
-
-      let encodedPlayerFingerprint = new TextEncoder().encode(playerFingerprint.toString());
-      let playerIdBuffer = await crypto.subtle.digest("SHA-512", encodedPlayerFingerprint);
-      const playerIdArray = Array.from(new Uint8Array(playerIdBuffer));
-      const playerId = playerIdArray.map(b => b.toString(16).padStart(2, '0')).join('');
-
-      localStorage.setItem(PLAYER_ID_KEY, playerId);
+  async deviceFingerprintGeneration() {
+    let deviceFingerprint = localStorage.getItem(DEVICE_FINGERPRINT);
+    if (deviceFingerprint) {
+      return deviceFingerprint
     }
-    this.setState((prevState) => ({
-      ...prevState,
-      playerId: playerId,
-    }));
+    let rawFingerprint = await this.generateFingerprint();
+
+    let encodedPlayerFingerprint = new TextEncoder().encode(rawFingerprint.toString());
+    let buf = await crypto.subtle.digest("SHA-512", encodedPlayerFingerprint);
+    const playerIdArray = Array.from(new Uint8Array(buf));
+    deviceFingerprint = playerIdArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    localStorage.setItem(DEVICE_FINGERPRINT, deviceFingerprint);
+    return deviceFingerprint
   }
 
   render() {
     return (
-      <BrowserRouter>
-        <Switch>
-          <Route exact path="/game/:id" component={() => <Board playerId={this.state.playerId}/>}/>
-          <Layout>
-            <Heading/>
-            <Switch>
-              <Route exact path="/game" component={() => <NewGame playerId={this.state.playerId}/>}/>
-              <Route exact path="/" component={() => <Home playerId={this.state.playerId}/>}/>
-              <Route epath="*">
-                <h1>404 Not Found</h1>
-              </Route>
-            </Switch>
-          </Layout>
-        </Switch>
-      </BrowserRouter>
+      <ApolloProvider client={this.state.graphqlClient}>
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/game/:id" component={() => <Board playerId={this.state.playerId}/>}/>
+            <Layout>
+              <Heading/>
+              <Switch>
+                <Route exact path="/game" component={() => <NewGame playerId={this.state.playerId}/>}/>
+                <Route exact path="/" component={() => <Home playerId={this.state.playerId}/>}/>
+                <Route epath="*">
+                  <h1>404 Not Found</h1>
+                </Route>
+              </Switch>
+            </Layout>
+          </Switch>
+        </BrowserRouter>
+      </ApolloProvider>
     )
   }
 }
