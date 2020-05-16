@@ -1,77 +1,58 @@
 import React from "react";
 import module from './NewGame.module.scss'
 import {Redirect} from "react-router-dom"
+import gql from 'graphql-tag';
+import {useMutation} from '@apollo/react-hooks';
+import {useState} from 'react';
 
-class NewGame extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      form: {
-        numberOfPlayer: '',
-      }
-    };
+const NEW_GAME = gql`
+  mutation NewGame($numberOfPlayer: Int!) {
+    newGame(input: {numberOfPlayer: $numberOfPlayer}) {
+      id
+    }
+  }
+`;
 
-    this.handleFormNumberOfPlayerChange = this.handleFormNumberOfPlayerChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+function NewGame() {
+  const [values, setValues] = useState({numberOfPlayer: ''});
+  const [newGame, {data, error}] = useMutation(NEW_GAME);
+
+  if (error) {
+    alert(error)
   }
 
-  formValidateNumberOfPlayer(value) {
-    if (!(2 <= value && value <= 5)) {
-      alert("minimum 2, maximum 5");
-      return false
-    }
-    return true
+  if (data) {
+    return <Redirect push to={"/game/" + data.newGame.id}/>
   }
 
-  handleFormNumberOfPlayerChange(event) {
-    let value = event.target.value;
-    if (value) {
-      if (!this.formValidateNumberOfPlayer(value)) {
-        return
-      }
-    }
-    this.setState((prevState, _) => {
-      return {
-        ...prevState,
-        form: {
-          ...prevState.form,
-          numberOfPlayer: value
-        }
-      }
-    });
-  }
-
-  handleSubmit(event) {
-    if (!this.formValidateNumberOfPlayer(this.state.form.numberOfPlayer)) {
-      return
-    }
-    this.setState((prevState, _) => {
-      return {
-        ...prevState,
-        gameId: 1,
-      }
-    });
-    event.preventDefault();
-  }
-
-  render() {
-    const gameId = this.state.gameId;
-    if (gameId) {
-      return <Redirect push to={"/game/2"} />
-    }
-    return (
-      <div className={module.game}>
-        <form onSubmit={this.handleSubmit}>
-          <h2>Mulai permainan baru?</h2>
-          <div>
-            <label>Jumlah pemain</label>
-            <input type="number" min="1" max="5" placeholder="min 2, max 5" value={this.state.form.numberOfPlayer} onChange={this.handleFormNumberOfPlayerChange} />
-          </div>
-          <input type="submit" value="Mulai!!"/>
-        </form>
+  return <div className={module.game}>
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        newGame({variables: {numberOfPlayer: values.numberOfPlayer}});
+      }}
+    >
+      <h2>Mulai permainan baru?</h2>
+      <div>
+        <label>Jumlah pemain</label>
+        <input
+          type="number" min="1" max="5" placeholder="min 2, max 5"
+          value={values.numberOfPlayer}
+          onChange={e => {
+            let value = e.target.value;
+            if (value) {
+              if (!(2 <= value && value <= 5)) {
+                alert("minimum 2, maximum 5");
+                return
+              }
+            }
+            setValues(values => ({...values, numberOfPlayer: value}));
+          }}
+        />
       </div>
-    );
-  }
+      <input type="submit" value="Mulai!!"/>
+    </form>
+  </div>
 }
 
 export default NewGame
