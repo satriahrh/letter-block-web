@@ -13,8 +13,8 @@ import Heading from "./components/Heading";
 import Fingerprint2 from 'fingerprintjs2';
 import {ApolloProvider} from '@apollo/react-hooks';
 import ApolloClient from 'apollo-boost';
-import {createHttpLink} from 'apollo-link-http';
-import {setContext} from 'apollo-link-context';
+// import {createHttpLink} from 'apollo-link-http';
+// import {setContext} from 'apollo-link-context';
 import caseConverter from 'case-converter'
 
 const DEVICE_FINGERPRINT = "deviceFingerprint";
@@ -24,7 +24,6 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      graphqlClient: new ApolloClient({uri: 'http://localhost:8080/query'}),
       loading: true
     }
   }
@@ -36,23 +35,26 @@ class App extends React.Component {
   }
 
   async graphqlClientGeneration() {
-    const httpLink = createHttpLink({
-      uri: 'http://localhost:8080/query',
-    });
+    // const httpLink = createHttpLink({
+    //   uri: 'http://localhost:8080/query',
+    // });
 
     let token = await this.tokenGeneration();
 
-    const authLink = setContext((_, {headers}) => {
-      return {
-        headers: {
-          ...headers,
-          authorization: token ? `Bearer ${token}` : "",
-        }
-      }
-    });
+    // const authLink = setContext((_, {headers}) => {
+    //   return {
+    //     headers: {
+    //       ...headers,
+    //       authorization: token ? `Bearer ${token}` : "",
+    //     }
+    //   }
+    // });
 
     const graphqlClient = new ApolloClient({
-      link: authLink.concat(httpLink),
+      uri: 'http://localhost:8080/query',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      }
     });
 
     this.setState((prevState) => ({
@@ -67,9 +69,6 @@ class App extends React.Component {
     if (accessToken) {
       accessToken = JSON.parse(accessToken)
       let time = new Date()
-      console.log("sekarang", time.getTime())
-      console.log("tokennya", accessToken.expiredAt)
-      console.log(time.getTime() < accessToken.expiredAt)
       if (time.getTime() < accessToken.expiredAt) {
         console.log(accessToken.token)
         return accessToken.token
@@ -93,7 +92,6 @@ class App extends React.Component {
     let time = new Date();
     response.data.expiredAt = response.data.expiredIn * 1000 + time.getTime();
     localStorage.setItem(ACCESS_TOKEN, JSON.stringify(response.data));
-    console.log(response.data)
     return response.data.token
   }
 
@@ -132,6 +130,11 @@ class App extends React.Component {
   }
 
   render() {
+    if (this.state.loading) {
+      return <p>
+        Please Wait
+      </p>
+    }
     return (
       <ApolloProvider client={this.state.graphqlClient}>
         <BrowserRouter>
