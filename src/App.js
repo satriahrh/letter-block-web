@@ -5,7 +5,7 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import Board from "./pages/Board";
+// import Board from "./pages/Board";
 import Layout from "./components/Layout";
 import NewGame from "./pages/NewGame";
 import Home from "./pages/Home";
@@ -16,6 +16,7 @@ import ApolloClient from 'apollo-boost';
 // import {createHttpLink} from 'apollo-link-http';
 // import {setContext} from 'apollo-link-context';
 import caseConverter from 'case-converter'
+import Game from "./pages/Game";
 
 const DEVICE_FINGERPRINT = "deviceFingerprint";
 const ACCESS_TOKEN = "accessToken";
@@ -139,12 +140,13 @@ class App extends React.Component {
       <ApolloProvider client={this.state.graphqlClient}>
         <BrowserRouter>
           <Switch>
-            <Route exact path="/game/:id" component={() => <Board playerId={this.state.playerId}/>}/>
+            <Route exact path="/game/:gameId" component={Game}/>
+            {/*<Route exact path="/game/:gameId" component={Board}/>*/}
             <Layout>
               <Heading/>
               <Switch>
-                <Route exact path="/game" component={() => <NewGame playerId={this.state.playerId}/>}/>
-                <Route exact path="/" component={() => <Home playerId={this.state.playerId}/>}/>
+                <Route exact path="/game" component={NewGame}/>
+                <Route exact path="/" component={Home}/>}/>
                 <Route epath="*">
                   <h1>404 Not Found</h1>
                 </Route>
