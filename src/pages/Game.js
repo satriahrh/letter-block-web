@@ -1,5 +1,8 @@
 import React, {useState} from 'react';
 import {useParams} from 'react-router';
+import gql from 'graphql-tag';
+import {useQuery} from '@apollo/react-hooks';
+
 import module from './Game.module.scss'
 import Layout from "../components/Layout";
 import Heading from "../components/Heading";
@@ -13,8 +16,29 @@ const BOX_COLOR = [
   ['#ffccfc', '#ffccfc'],
   ['#d0fecc', '#18fb03'],
 ];
-
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const GET_GAME = gql`
+  query GetGame($gameId: ID!) {
+    getGame(gameId: $gameId) {
+      id
+      boardBase
+      boardPositioning
+      wordPlayed {
+        player {
+          id
+        }
+        word
+      }
+      players {
+        id
+      }
+      currentPlayerOrder
+      numberOfPlayer
+    }
+  }
+`;
+let boxRef = [];
+let sendRef = null;
 
 function currentPlayerColor(currentPlayerOrder) {
   return BOX_COLOR[currentPlayerOrder + 1][1]
@@ -43,24 +67,41 @@ function strengthOfThisBase(position, numberOfPlayer) {
   return position % (numberOfPlayer + 1)
 }
 
-let boxRef = [];
-let sendRef = null;
-
 function Game() {
   let {gameId} = useParams();
 
-  const [values, setValues] = useState({
-    currentPlayerOrder: 0,
-    players: [{id: 123,}],
-    numberOfPlayer: 3,
-    boardBase: Array(25).fill(0).map((_, id) => (id)),
-    boardPositioning: Array(25).fill(0),
-    wordPlayeds: [],
+  const [state, setState] = useState({
     wordArray: []
   });
 
+  const {loading, error, data} = useQuery(GET_GAME, {variables: {gameId}});
+
+  if (loading) {
+    return <p>Wait a minute</p>
+  }
+  if (error) {
+    console.log(error)
+    return (
+      <Layout>
+        <h1>Something is wrong</h1>
+        <p>{error}</p>
+      </Layout>
+    )
+  }
+  let game = {};
+  if (data) {
+    game = {
+      currentPlayerOrder: data.getGame.currentPlayerOrder,
+      players: data.getGame.players,
+      numberOfPlayer: data.getGame.numberOfPlayer,
+      boardBase: data.getGame.boardBase,
+      boardPositioning: data.getGame.boardPositioning,
+      wordPlayeds: data.getGame.wordPlayed
+    }
+  }
+
   let playerColors = new Map();
-  values.players.forEach((player, id) => {
+  game.players.forEach((player, id) => {
     playerColors.set(player.id, BOX_COLOR[id + 1][1])
   });
 
@@ -69,25 +110,25 @@ function Game() {
       <Heading>
         <p style={{margin: "0"}}>
           <span
-            style={{color: currentPlayerColor(values.currentPlayerOrder)}}
-          >{currentPlayer(values.currentPlayerOrder, values.players)}</span>'s
+            style={{color: currentPlayerColor(game.currentPlayerOrder)}}
+          >{currentPlayer(game.currentPlayerOrder, game.players)}</span>'s
           turn
         </p>
       </Heading>
       <div className={module.word}>
-        <p>{processWord(values.wordArray, values.boardBase)}</p>
+        <p>{processWord(state.wordArray, game.boardBase)}</p>
       </div>
       <div className={module.base}>
         <button
           className={module.nav}
           onClick={e => {
-            values.wordArray.forEach(i => {
+            state.wordArray.forEach(i => {
               boxRef[i].disabled = false
             });
             sendRef.disabled = true;
 
-            setValues(prevValues => ({
-              ...prevValues,
+            setState(prevState => ({
+              ...prevState,
               wordArray: [],
             }));
           }}
@@ -107,13 +148,13 @@ function Game() {
               ref={r => boxRef[i] = r}
               onClick={e => {
                 let id = e.currentTarget.id;
-                setValues(prevValues => {
-                  let newWordArray = [].concat(values.wordArray, id);
+                setState(prevState => {
+                  let newWordArray = [].concat(state.wordArray, id);
                   if (newWordArray.length >= 3) {
                     sendRef.disabled = false
                   }
                   return {
-                    ...prevValues,
+                    ...prevState,
                     wordArray: newWordArray
                   };
                 });
@@ -121,20 +162,20 @@ function Game() {
               }}
               style={{
                 backgroundColor: BOX_COLOR[
-                  ownerOfThisBase(values.boardPositioning[i], values.numberOfPlayer)
+                  ownerOfThisBase(game.boardPositioning[i], game.numberOfPlayer)
                   ][
-                  strengthOfThisBase(values.boardPositioning[i], values.numberOfPlayer)
+                  strengthOfThisBase(game.boardPositioning[i], game.numberOfPlayer)
                   ],
               }}
             >
-              {ALPHABET[values.boardBase[i]]}
+              {ALPHABET[game.boardBase[i]]}
             </button>
           ))
         }
       </div>
       <Layout>
         <pre>letter-block.game/bd/{gameId}</pre>
-        <BoardWordHistory wordPlayeds={values.wordPlayeds} playerColors={playerColors}/>
+        <BoardWordHistory wordPlayeds={game.wordPlayeds} playerColors={playerColors}/>
       </Layout>
     </div>
   )
