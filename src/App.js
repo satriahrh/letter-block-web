@@ -13,13 +13,13 @@ import Heading from "./components/Heading";
 import Fingerprint2 from 'fingerprintjs2';
 import {ApolloProvider} from '@apollo/react-hooks';
 import ApolloClient from 'apollo-boost';
-// import {createHttpLink} from 'apollo-link-http';
-// import {setContext} from 'apollo-link-context';
+import {InMemoryCache} from 'apollo-cache-inmemory';
 import caseConverter from 'case-converter'
 import Game from "./pages/Game";
 
 const DEVICE_FINGERPRINT = "deviceFingerprint";
 const ACCESS_TOKEN = "accessToken";
+const cache = new InMemoryCache();
 
 class App extends React.Component {
   constructor(props) {
@@ -36,26 +36,13 @@ class App extends React.Component {
   }
 
   async graphqlClientGeneration() {
-    // const httpLink = createHttpLink({
-    //   uri: 'http://localhost:8080/query',
-    // });
-
     let token = await this.tokenGeneration();
-
-    // const authLink = setContext((_, {headers}) => {
-    //   return {
-    //     headers: {
-    //       ...headers,
-    //       authorization: token ? `Bearer ${token}` : "",
-    //     }
-    //   }
-    // });
-
     const graphqlClient = new ApolloClient({
-      uri: 'http://localhost:8080/query',
+      cache: cache,
+      uri: 'http://192.168.43.93:8080/query',
       headers: {
         Authorization: `Bearer ${token}`,
-      }
+      },
     });
 
     this.setState((prevState) => ({
@@ -68,18 +55,17 @@ class App extends React.Component {
   async tokenGeneration() {
     let accessToken = localStorage.getItem(ACCESS_TOKEN);
     if (accessToken) {
-      accessToken = JSON.parse(accessToken)
-      let time = new Date()
+      accessToken = JSON.parse(accessToken);
+      let time = new Date();
       if (time.getTime() < accessToken.expiredAt) {
-        console.log(accessToken.token)
         return accessToken.token
       }
     }
-    let deviceFingerprint = await this.deviceFingerprintGeneration()
+    let deviceFingerprint = await this.deviceFingerprintGeneration();
     let form = new FormData();
     form.append("deviceFingerprint", deviceFingerprint);
 
-    let response = await fetch('http://localhost:8080/authenticate', {
+    let response = await fetch('http://192.168.43.93:8080/authenticate', {
       method: 'POST',
       body: form,
     }).then(response => response.json()).then(data => {
@@ -119,12 +105,16 @@ class App extends React.Component {
     if (deviceFingerprint) {
       return deviceFingerprint
     }
-    let rawFingerprint = await this.generateFingerprint();
 
+    // let a = new Uint32Array(20);
+    // a.fill(3)
+    // const typedArray = crypto.getRandomValues(a);
+
+    let rawFingerprint = await this.generateFingerprint();
     let encodedPlayerFingerprint = new TextEncoder().encode(rawFingerprint.toString());
     let buf = await crypto.subtle.digest("SHA-512", encodedPlayerFingerprint);
-    const playerIdArray = Array.from(new Uint8Array(buf));
-    deviceFingerprint = playerIdArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const typedArray = Array.from(new Uint8Array(buf));
+    deviceFingerprint = typedArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
     localStorage.setItem(DEVICE_FINGERPRINT, deviceFingerprint);
     return deviceFingerprint

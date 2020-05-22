@@ -8,7 +8,7 @@ export default function BoardWordHistory(props) {
   ));
   return (
     <div className={module.history}>
-      <h2>word history</h2>7
+      <h2>word history</h2>
       <ul>
         {words}
       </ul>
