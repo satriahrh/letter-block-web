@@ -1,17 +1,17 @@
-import React from 'react';
-import module from './Board.module.scss';
+import React from "react";
+import module from "./Board.module.scss";
 import Layout from "../components/Layout";
 import Heading from "../components/Heading";
 import BoardWordHistory from "../components/BoardWordHistory";
 // import Pusher from 'pusher-js';
 
 const BOX_COLOR = [
-  ['#e0e0e0'], // no owner
-  ['#ff9999', '#ff0000'],
-  ['#ccdcff', '#0152ff'],
-  ['#fbfecc', '#ecfb00'],
-  ['#ffccfc', '#ffccfc'],
-  ['#d0fecc', '#18fb03'],
+  ["#e0e0e0"], // no owner
+  ["#ff9999", "#ff0000"],
+  ["#ccdcff", "#0152ff"],
+  ["#fbfecc", "#ecfb00"],
+  ["#ffccfc", "#ffccfc"],
+  ["#d0fecc", "#18fb03"],
 ];
 
 class Board extends React.Component {
@@ -30,7 +30,7 @@ class Board extends React.Component {
         boardBase: Array(25).fill(0),
         boardPositioning: Array(25).fill(0),
         maxStrength: 2,
-        alphabet: " "
+        alphabet: " ",
       },
       user: {
         id: 1,
@@ -64,12 +64,12 @@ class Board extends React.Component {
     this.setState((prevState, _) => {
       let newWord = [].concat(this.state.word, id);
       if (newWord.length >= 3) {
-        this.sendRef.disabled = false
+        this.sendRef.disabled = false;
       }
       return {
         ...prevState,
         word: newWord,
-      }
+      };
     });
     this.boxRef[id].disabled = true;
   }
@@ -84,55 +84,55 @@ class Board extends React.Component {
       return {
         ...prevState,
         word: [],
-      }
+      };
     });
   }
 
   parseAlphabet(base) {
-    return this.state.game.alphabet[this.state.game.boardBase[base]]
+    return this.state.game.alphabet[this.state.game.boardBase[base]];
   }
 
   processWord(word) {
     let result = "";
     for (let i = 0; i < word.length; i++) {
-      result += this.parseAlphabet(word[i])
+      result += this.parseAlphabet(word[i]);
     }
-    return result
+    return result;
   }
 
   ownerOfThisBase(position) {
     if (position === 0) {
-      return 0
+      return 0;
     }
-    return position / (this.state.game.numberOfPlayer + 2)
+    return position / (this.state.game.numberOfPlayer + 2);
   }
 
   strengthOfThisBase(position) {
-    return position % (this.state.game.numberOfPlayer + 1)
+    return position % (this.state.game.numberOfPlayer + 1);
   }
 
   currentTurn() {
     let gameCurrentPlayer = this.state.game.currentPlayer;
     if (gameCurrentPlayer.id === this.state.user.id) {
-      return "YOUR"
+      return "YOUR";
     } else {
       let currentPlayer = this.state.game.players[gameCurrentPlayer.order];
       if (currentPlayer) {
-        return currentPlayer.username
+        return currentPlayer.username;
       } else {
-        return ''
+        return "";
       }
     }
   }
 
   currentTurnColor() {
-    return BOX_COLOR[this.state.game.currentPlayer.order + 1][1]
+    return BOX_COLOR[this.state.game.currentPlayer.order + 1][1];
   }
 
   definePlayerColors(players) {
     players.forEach((player, id) => {
-      this.state.playerColors.set(player.id, BOX_COLOR[id + 1][1])
-    })
+      this.state.playerColors.set(player.id, BOX_COLOR[id + 1][1]);
+    });
   }
 
   componentDidMount() {
@@ -145,87 +145,92 @@ class Board extends React.Component {
       },
 
       players: [
-        {id: 1, username: "aku"},
-        {id: 2, username: "kamu"},
-        {id: 3, username: "dia"},
-        {id: 4, username: "mereka"},
-        {id: 5, username: "kami"}
+        { id: 1, username: "aku" },
+        { id: 2, username: "kamu" },
+        { id: 3, username: "dia" },
+        { id: 4, username: "mereka" },
+        { id: 5, username: "kami" },
       ],
 
       wordPlayeds: [
-        {word: "KATA", playerId: 1},
-        {word: "KUTU", playerId: 2},
-        {word: "KITA", playerId: 3},
-        {word: "KAMI", playerId: 4},
-        {word: "MIKA", playerId: 5},
+        { word: "KATA", playerId: 1 },
+        { word: "KUTU", playerId: 2 },
+        { word: "KITA", playerId: 3 },
+        { word: "KAMI", playerId: 4 },
+        { word: "MIKA", playerId: 5 },
       ],
 
       maxStrength: 2,
       numberOfPlayer: 2,
-      boardBase: this.state.game.boardBase.map((_, id) => (id)),
+      boardBase: this.state.game.boardBase.map((_, id) => id),
       boardPositioning: Array(25).fill(0),
-      alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     };
 
     this.setState((prevState, _) => ({
-        ...prevState,
-        game: game,
-      })
-    );
+      ...prevState,
+      game: game,
+    }));
 
     this.definePlayerColors(game.players);
   }
-
 
   render() {
     return (
       <div className={module.board}>
         <Heading>
-          <p style={{margin: "0"}}>
-            <span style={{color: this.currentTurnColor()}}>{this.currentTurn()}</span>'s turn
+          <p style={{ margin: "0" }}>
+            <span style={{ color: this.currentTurnColor() }}>
+              {this.currentTurn()}
+            </span>
+            's turn
           </p>
         </Heading>
         <div className={module.word}>
           <p>{this.processWord(this.state.word)}</p>
         </div>
         <div className={module.base}>
-          <button
-            className={module.nav} onClick={this.clearOnClick}
-          >
+          <button className={module.nav} onClick={this.clearOnClick}>
             CLEAR
           </button>
           <button
-            className={module.nav} disabled={true}
-            ref={(r) => this.sendRef = r}
+            className={module.nav}
+            disabled={true}
+            ref={(r) => (this.sendRef = r)}
           >
             SEND
           </button>
-          {
-            [...Array(25).keys()].map((id) => (
-              <button
-                key={id}
-                id={id} className={module.box}
-                onClick={this.boxOnClick}
-                ref={(r) => this.boxRef[id] = r}
-                style={{
-                  'backgroundColor': BOX_COLOR[
+          {[...Array(25).keys()].map((id) => (
+            <button
+              key={id}
+              id={id}
+              className={module.box}
+              onClick={this.boxOnClick}
+              ref={(r) => (this.boxRef[id] = r)}
+              style={{
+                backgroundColor:
+                  BOX_COLOR[
                     this.ownerOfThisBase(this.state.game.boardPositioning[id])
-                    ][
-                    this.strengthOfThisBase(this.state.game.boardPositioning[id])
-                    ],
-                }}
-              >
-                {this.state.game.alphabet[this.state.game.boardBase[id]]}
-              </button>
-            ))
-          }
+                  ][
+                    this.strengthOfThisBase(
+                      this.state.game.boardPositioning[id]
+                    )
+                  ],
+              }}
+            >
+              {this.state.game.alphabet[this.state.game.boardBase[id]]}
+            </button>
+          ))}
         </div>
         <Layout>
           <pre>letter-block.game/bd/{this.props.id}</pre>
-          <BoardWordHistory wordPlayeds={this.state.game.wordPlayeds} playerColors={this.state.playerColors}/>
+          <BoardWordHistory
+            wordPlayeds={this.state.game.wordPlayeds}
+            playerColors={this.state.playerColors}
+          />
         </Layout>
       </div>
-    )
+    );
   }
 }
 

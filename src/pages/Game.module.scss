@@ -9,7 +9,8 @@
 
 // FONT SIZE ----------------
 
-.box, .word {
+.box,
+.word {
   font-size: 32px;
 }
 
@@ -29,7 +30,8 @@
 }
 
 @media (min-width: 400px) {
-  .box, .word {
+  .box,
+  .word {
     font-size: 48px;
   }
 
@@ -44,7 +46,8 @@
 }
 
 @media (min-width: 600px) {
-  .box, .word {
+  .box,
+  .word {
     font-size: 64px;
   }
 
@@ -65,7 +68,7 @@
   width: fit-content;
   margin: 0 auto;
   display: flex;
-  flex-flow: row wrap
+  flex-flow: row wrap;
 }
 
 .box {

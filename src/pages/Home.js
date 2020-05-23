@@ -1,12 +1,12 @@
 import React from "react";
-import module from "./Home.module.scss"
-import {Link} from "react-router-dom";
+import module from "./Home.module.scss";
+import { Link } from "react-router-dom";
 
-import gql from 'graphql-tag';
-import {useQuery} from '@apollo/react-hooks';
+import gql from "graphql-tag";
+import { useQuery } from "@apollo/react-hooks";
 
 function Home() {
-  const {error, data} = useQuery(gql`
+  const { error, data } = useQuery(gql`
     query {
       myGames {
         id
@@ -15,30 +15,31 @@ function Home() {
   `);
 
   if (error) {
-    console.log(error)
+    console.log(error);
   }
 
-  let games = []
+  let games = [];
   if (data) {
-    games = data.myGames
+    games = data.myGames;
   }
 
-  let onGoingGames = null
+  let onGoingGames = null;
   if (games.length > 0) {
-    onGoingGames = <div>
-      <h2>On Going Games</h2>
-      <ul>
-        {
-          games.map((game, id) => (
-            <li key={id}><Link
-              to={"/game/" + game.id}>{game.id}
-              {/*{game.currentPlayerId === this.state.user.id ? ' --- YOUR TURN!!' : null}*/}
-            </Link>
+    onGoingGames = (
+      <div>
+        <h2>On Going Games</h2>
+        <ul>
+          {games.map((game, id) => (
+            <li key={id}>
+              <Link to={"/game/" + game.id}>
+                {game.id}
+                {/*{game.currentPlayerId === this.state.user.id ? ' --- YOUR TURN!!' : null}*/}
+              </Link>
             </li>
-          ))
-        }
-      </ul>
-    </div>
+          ))}
+        </ul>
+      </div>
+    );
   }
 
   return (
@@ -49,4 +50,4 @@ function Home() {
   );
 }
 
-export default Home
+export default Home;

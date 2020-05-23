@@ -13,7 +13,8 @@ button:visited {
 
 // FONT SIZE ----------------
 
-.box, .word {
+.box,
+.word {
   font-size: 32px;
 }
 
@@ -28,13 +29,14 @@ button:visited {
   padding: 10px 0;
   overflow-x: scroll;
   //position:absolute;
-  left:0;
+  left: 0;
   margin: 0 auto;
   text-align: center;
 }
 
 @media (min-width: 400px) {
-  .box, .word {
+  .box,
+  .word {
     font-size: 48px;
   }
 
@@ -49,7 +51,8 @@ button:visited {
 }
 
 @media (min-width: 600px) {
-  .box, .word{
+  .box,
+  .word {
     font-size: 64px;
   }
 
@@ -70,7 +73,7 @@ button:visited {
   width: fit-content;
   margin: 0 auto;
   display: flex;
-  flex-flow: row wrap
+  flex-flow: row wrap;
 }
 
 .box {
