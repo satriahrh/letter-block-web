@@ -1,51 +1,42 @@
-import React from "react";
+import React, {useState} from "react";
 import module from "./Home.module.scss";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
+import {useQuery} from "@apollo/react-hooks";
 
 function Home() {
-  const { error, data } = useQuery(gql`
+  const [state, setState] = useState({});
+
+  useQuery(gql`
     query {
       myGames {
         id
       }
     }
-  `);
-
-  if (error) {
-    console.log(error);
-  }
-
-  let games = [];
-  if (data) {
-    games = data.myGames;
-  }
-
-  let onGoingGames = null;
-  if (games.length > 0) {
-    onGoingGames = (
-      <div>
-        <h2>On Going Games</h2>
-        <ul>
-          {games.map((game, id) => (
-            <li key={id}>
-              <Link to={"/game/" + game.id}>
-                {game.id}
-                {/*{game.currentPlayerId === this.state.user.id ? ' --- YOUR TURN!!' : null}*/}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
+  `, {
+    onCompleted: data => {
+      setState(prevState => ({
+        ...prevState,
+        games: data.myGames.map((game, id) => (
+          <li key={id}>
+            <Link to={"/game/" + game.id}>
+              {game.id}
+              {/*{game.currentPlayerId === this.state.user.id ? ' --- YOUR TURN!!' : null}*/}
+            </Link>
+          </li>
+        )),
+      }))
+    },
+    onError: error => {
+      alert(error.message);
+    }
+  });
 
   return (
     <div className={module.home}>
       <h1>Home</h1>
-      {onGoingGames}
+      {state.games}
     </div>
   );
 }

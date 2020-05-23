@@ -161,6 +161,9 @@ function Game() {
         },
       }));
     },
+    onError: error => {
+      alert(error.message)
+    }
   });
 
   const [takeTurn] = useMutation(TAKE_TURN, {
@@ -170,7 +173,7 @@ function Game() {
         sendActive: true,
         boxActive: Array(25).fill(true),
       }));
-      alert(error.graphQLErrors[0].message);
+      alert(error.message);
     },
     onCompleted: (data) => {
       setState((prevState) => ({
