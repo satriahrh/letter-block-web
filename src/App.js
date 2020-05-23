@@ -70,7 +70,7 @@ function App() {
     form.append("username", username);
     form.append("deviceFingerprint", deviceFingerprint);
 
-    await fetch("http://192.168.43.93:8080/register", {
+    await fetch(process.env.REACT_APP_API_URL_REGISTER, {
       method: "POST",
       body: form,
     })
@@ -87,7 +87,7 @@ function App() {
     let form = new FormData();
     form.append("deviceFingerprint", deviceFingerprint);
 
-    let response = await fetch("http://192.168.43.93:8080/authenticate", {
+    let response = await fetch(process.env.REACT_APP_API_URL_AUTHENTICATE, {
       method: "POST",
       body: form,
     })
@@ -153,7 +153,7 @@ function App() {
           ...prevState,
           graphqlClient: new ApolloClient({
             cache: cache,
-            uri: "http://192.168.43.93:8080/query",
+            uri: process.env.REACT_APP_API_URL_GRAPHQL,
             headers: {
               Authorization: `Bearer ${state.accessToken.token}`,
             },

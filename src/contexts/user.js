@@ -29,6 +29,7 @@ export const UserContextProvider = (props) => {
     },
     onError: (error) => {
       console.log(error);
+      alert(error);
     },
   });
 

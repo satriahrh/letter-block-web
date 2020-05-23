@@ -15,6 +15,7 @@
     "apollo-link-context": "^1.0.20",
     "apollo-link-http": "^1.5.17",
     "case-converter": "^1.0.1",
+    "dotenv": "^8.2.0",
     "fingerprintjs2": "^2.1.0",
     "graphql": "^15.0.0",
     "node-sass": "^4.13.1",
