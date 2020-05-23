@@ -20,7 +20,10 @@ const ACCESS_TOKEN = "accessToken";
 const cache = new InMemoryCache();
 
 async function deviceFingerprintGeneration() {
-  let deviceFingerprint;
+  let deviceFingerprint = localStorage.getItem(DEVICE_FINGERPRINT);
+  if (deviceFingerprint) {
+    return deviceFingerprint;
+  }
   if (deviceFingerprint) {
     return deviceFingerprint;
   }
@@ -92,14 +95,20 @@ function App() {
       body: form,
     })
       .then((response) => {
+        if (response.status !== 200) {
+          setState(prevState => ({
+            ...prevState,
+            deviceFingerprint: null,
+          }));
+          return { data: { token: "", expiredIn: 5 } }
+        }
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         return data;
       })
       .catch((reason) => {
-        console.log(reason);
+        alert(reason)
         return { data: { token: "", expiredIn: 5 } };
       });
 
