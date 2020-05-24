@@ -31,9 +31,10 @@
     "react-scripts": "3.4.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "dev": "react-scripts start",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
