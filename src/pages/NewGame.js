@@ -22,7 +22,7 @@ function NewGame() {
   }
 
   if (data) {
-    return <Redirect push to={"/game/" + data.newGame.id} />;
+    return <Redirect to={"/game/" + data.newGame.id} />;
   }
 
   return (
