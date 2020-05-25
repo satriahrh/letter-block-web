@@ -329,7 +329,7 @@ function Game() {
         ))}
       </div>
       <Layout>
-        <pre>letter-block.game/bd/{gameId}</pre>
+        <pre>letter-block.herokuapp.com/game/{gameId}</pre>
         <BoardWordHistory
           wordPlayeds={state.game.wordPlayeds}
           playerColors={playerColors}
