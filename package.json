@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "12.16.1"
+    "node": "12.16.1",
+    "yarn": "1.16.0"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -16,20 +17,25 @@
     "apollo-link-http": "^1.5.17",
     "case-converter": "^1.0.1",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-favicon": "^2.0.1",
     "fingerprintjs2": "^2.1.0",
     "graphql": "^15.0.0",
+    "graphql-tag": "latest",
+    "jssha": "^3.1.0",
     "node-sass": "^4.13.1",
+    "path": "^0.12.7",
     "pusher-js": "^5.1.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.4.1",
-    "graphql-tag": "latest"
+    "react-scripts": "3.4.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "dev": "react-scripts start",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

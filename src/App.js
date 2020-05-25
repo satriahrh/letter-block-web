@@ -14,6 +14,7 @@ import caseConverter from "case-converter";
 import Game from "./pages/Game";
 import { UserContextProvider } from "./contexts/user";
 import { LoadingBlock } from "./components/Loading";
+import jsSHA from "jssha/dist/sha512";
 
 const DEVICE_FINGERPRINT = "deviceFingerprint";
 const ACCESS_TOKEN = "accessToken";
@@ -49,13 +50,11 @@ async function deviceFingerprintGeneration() {
       }
     });
   })();
+
+  let hasher = new jsSHA('SHA-512', "TEXT");
   const strFingerprint = JSON.stringify(rawFingerprint);
-  let encodedPlayerFingerprint = new TextEncoder().encode(strFingerprint);
-  let buf = await crypto.subtle.digest("SHA-512", encodedPlayerFingerprint);
-  const typedArray = Array.from(new Uint8Array(buf));
-  deviceFingerprint = typedArray
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+  hasher.update(strFingerprint);
+  deviceFingerprint = hasher.getHash("HEX");
 
   localStorage.setItem(DEVICE_FINGERPRINT, deviceFingerprint);
   return deviceFingerprint;
@@ -114,7 +113,6 @@ function App() {
 
     response = caseConverter.toCamelCase(response);
     let expiredIn = response.data.expiredIn;
-    console.log(expiredIn);
     let time = new Date();
     response.data.expiredAt = expiredIn * 1000 + time.getTime();
     localStorage.setItem(ACCESS_TOKEN, JSON.stringify(response.data));
