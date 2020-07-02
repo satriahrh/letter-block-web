@@ -17,7 +17,7 @@ const BOX_COLOR = [
   ["#ffccfc", "#ffccfc"],
   ["#d0fecc", "#18fb03"],
 ];
-const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const ALPHABET = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const GET_GAME = gql`
   query GetGame($gameId: ID!) {
     getGame(gameId: $gameId) {
