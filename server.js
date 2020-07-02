@@ -7,6 +7,10 @@ app.use(favicon(__dirname + '/build/favicon.ico'));
 // the __dirname is the current directory from where the script is running
 app.use(express.static(__dirname));
 app.use(express.static(path.join(__dirname, 'build')));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 app.get('/ping', function (req, res) {
   return res.send('pong');
 });
