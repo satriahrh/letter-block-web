@@ -2,7 +2,7 @@
 
 ## About
 
-Front end of [Letter Block Game](https://letter-block.herokuapp.com)
+Front end of [Letter Block Game](https://letter-block.herokuapp.com). If you wish to contribute the back end, please follow this repository [github.com/satriahrh/letter-block](https://github.com/satriahrh/letter-block).
 
 ## Requirements
 
@@ -39,7 +39,7 @@ Copy `env.sample` to `.env` then edit it with the url where you have setup:
 
 ### Contacting the owner
 
-Email via [satriah<at>gmail<dot>com](mailto:satriahrh@gmail.com), telegram to t.me/satriahrh
+Email via [satriah\<at\>gmail\<dot\>com](mailto:satriahrh@gmail.com), telegram to [t.me/satriahrh](https://t.me/satriahrh)
 
 ### Public Trello board
 
