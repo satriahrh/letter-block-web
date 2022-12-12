@@ -17,7 +17,7 @@
     "apollo-link-http": "^1.5.17",
     "case-converter": "^1.0.1",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-favicon": "^2.0.1",
     "fingerprintjs2": "^2.1.0",
     "graphql": "^15.0.0",
